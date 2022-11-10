@@ -1,19 +1,30 @@
-import requests
+import os
+import json
 
-from flask import Flask
-from .round_robin import RoundRobinLB
+from flask import Flask, jsonify
 
 app = Flask(__name__)
 
-# These are just placeholders for now
-hosts = ["https://www.google.com", "https://www.cnn.com", "https://www.illinois.edu"]
-
-loadbalancer = RoundRobinLB(hosts)
-
 @app.route("/")
 def main():
+  containers = get_container_stats()
 
-  host = loadbalancer.get_host()
-  request = requests.get(host)
+  results = {
+    "containers": containers,
+    "node": {}
+  }
 
-  return request.text
+  return jsonify(results)
+
+def get_container_stats():
+  cmd = "docker stats --no-stream --format '{\"container\": \"{{ .Container }}\", \"memory\": { \"raw\": \"{{ .MemUsage }}\", \"percent\": \"{{ .MemPerc }}\"}, \"cpu\": \"{{ .CPUPerc }}\"}'"
+  stream = os.popen(cmd)
+  output = stream.read()
+  jsonlines = output.split('\n')
+
+  containers = []
+  for line in jsonlines[:-1]:
+    data = json.loads(line)
+    containers.append(data)
+
+  return containers
