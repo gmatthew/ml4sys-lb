@@ -69,6 +69,6 @@ int main (void)
     get_stats(&st0_0, -1);
     sleep(1);
     get_stats(&st0_1, -1);
-    printf("cpu: %lf%%", calculate_load(&st0_0, &st0_1));
+    printf("\"cpu\": \"%lf%%\"}", calculate_load(&st0_0, &st0_1));
     return 0;
 }

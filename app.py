@@ -8,10 +8,10 @@ app = Flask(__name__)
 @app.route("/")
 def main():
   containers = get_container_stats()
-  nodes = get_node_stats()
+  node = get_node_stats()
   results = {
     "containers": containers,
-    "node": nodes
+    "node": node
   }
 
   return jsonify(results)
@@ -30,17 +30,13 @@ def get_container_stats():
   return containers
 
 def get_node_stats():
-  nodes = []
+  node = []
   cmd = "./get_mem_stats"
   stream = os.popen(cmd)
-  output = stream.read()
-  jsonlines = output.split(',')
-  nodes.append(jsonlines)
-
+  output1 = stream.read()
   cmd = "./get_cpu_stats"
   stream = os.popen(cmd)
-  output = stream.read()
-  jsonlines = output.split(',')
-  nodes.append(jsonlines)
-
-  return nodes
+  output2 = stream.read()
+  output = output1 + ", " + output2
+  node.append(json.loads(output))
+  return node

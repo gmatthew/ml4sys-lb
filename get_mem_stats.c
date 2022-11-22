@@ -117,7 +117,7 @@ meminfo_t parse_meminfo()
 
 void print_mem_stats(const meminfo_t m)
 {
-    printf("memory: raw: %lldMiB / %lld MiB, percent: %f%%",
+    printf("{\"memory\": {\"raw\": \"%lldMiB / %lld MiB\", \"percent\": \"%f%%\"}",
         m.MemAvailableMiB,
         m.MemTotalMiB,
         m.MemAvailablePercent);
@@ -125,11 +125,6 @@ void print_mem_stats(const meminfo_t m)
 
 int main (void)
 {
-/*    struct cpustat st0_0, st0_1;
-    get_stats(&st0_0, -1);
-    sleep(1);
-    get_stats(&st0_1, -1);
-    printf("CPU: %lf%%\n", calculate_load(&st0_0, &st0_1));*/
     meminfo_t mem_info = parse_meminfo();
     print_mem_stats(mem_info);
     return 0;
