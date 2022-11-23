@@ -10,8 +10,8 @@ def main():
   containers = get_container_stats()
   node = get_node_stats()
   results = {
-    "containers": containers,
-    "node": node
+    "node": node,
+    "containers": containers
   }
 
   return jsonify(results)
