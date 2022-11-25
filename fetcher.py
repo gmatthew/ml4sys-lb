@@ -7,49 +7,95 @@ nodes = {
   "node2": "10.0.60.194"
 }
 
-def calculate_right_container(stats):
+def select_node(node_stats):
+  return selection_algorithm(node_stats)  
 
-  for node_name in stats:
-    node_stats = stats[node_name]
-    container_stats = node_stats["containers"]
-    node_stats = node_stats["node"]
+def select_container(stats):
+  # iterate over tats to create structure
+  # [ { name: 'foo', cpu: 10, memory: 20}]
+  container_stats = []
 
-    print(container_stats)
-    print(node_stats)
+  return selection_algorithm(container_stats)
+
+def selection_algorithm(stats):
+  # stats argument structure => [ { name: 'foo', cpu: 10, memory: 20}]
+  cpu_stats = []
+  mem_stats = []
+  diff = {}
+  for i in range(len(stats)):
+    cpu_val = stats[i]['cpu'].replace('%', '')
+    cpu_stats.append(float(cpu_val))
+    mem_val = stats[i]['memory'].replace('%', '')
+    mem_stats.append(float(mem_val))
+  
+  cpu_stats.sort()
+  mem_stats.sort()
+
+  for i in range(len(stats)):
+    cpu_val = stats[i]['cpu'].replace('%', '')
+    mem_val = stats[i]['memory'].replace('%', '')
+    diff[stats[i]['name']] = abs(float(cpu_val) - cpu_stats[0]) + abs(float(mem_val) - mem_stats[0])
+
+  dictionary_keys = list(diff.keys())
+  sorted_diff_dict = {dictionary_keys[i]: sorted(diff.values())[i] for i in range(len(dictionary_keys))}
+
+  #return sorted list of name and weights
+  return sorted_diff_dict
+
+
+def write_results(results):
+  print(results);
 
 def main():
 
-  #node_stats = {};
-  node_cpu_stats = {};
-  node_mem_stats = {};
-  node_cont_stats = {};
+  # make call to nodes api
+  # aggregate stats by nodes
+  # call select nodes with node stats
+  # call select container with containter stats of selected nodes
+  # write the order list of containers to file
+
+  node_stats = []
+  cont_stats = []
+  node_cont_stats = {}
   for node_name in nodes:
     ip_address = nodes[node_name]
     r = requests.get('http://'+ip_address+':5000')
     stats = json.loads(r.text)
-    node_cpu_stats[node_name] = stats['node'][0]['cpu']
-    node_mem_stats[node_name] = stats['node'][0]['memory']['percent']
-    node_cont_stats[node_name] = stats['containers']
-    #node_stats[node_name] = stats
-  print(node_cpu_stats)
-  print(node_mem_stats)
-  print(node_cont_stats)
+    d = {}
+    d['name'] = node_name
+    d['cpu'] = stats['node'][0]['cpu']
+    d['memory'] = stats['node'][0]['memory']['percent']
 
-  per_cont_mem = {};
-  per_cont_cpu = {};
+    #List of nodes and corresponding stats
+    node_stats.append(d)
+    node_cont_stats[node_name] = stats['containers']
+  print(node_stats)
+
+  node_containers_stats = {}
   for node_name in nodes:
+    node_containers_stats_list = []
     if (len(node_cont_stats[node_name]) != 0):
       for i in range(len(node_cont_stats[node_name])):
-        # Needs to be changed to store the values in a nested dictionary
-        per_cont_cpu[node_name] = node_cont_stats[node_name][i]['cpu'] 
-        per_cont_mem[node_name] = node_cont_stats[node_name][i]['memory']['percent']
-    else:
-      per_cont_cpu[node_name] = {}
-      per_cont_mem[node_name] = {}
-  print(per_cont_cpu)
-  print(per_cont_mem)
-  #print(node_stats['node1'])
-  #calculate_right_container(node_stats)
+        l = {}
+        l['name'] = node_cont_stats[node_name][i]['container']
+        l['cpu'] = node_cont_stats[node_name][i]['cpu']
+        l['memory'] = node_cont_stats[node_name][i]['memory']['percent']
+        node_containers_stats_list.append(l)
+
+    # Dict with key =  node_name and value = list of containers with corresponding stats
+    node_containers_stats[node_name] = node_containers_stats_list
+
+  print(node_containers_stats)
+  sorted_node_list = selection_algorithm(node_stats)
+  
+  # Sorted node_list
+  print(sorted_node_list)
+  sorted_cont_list = {}
+  for node_name in sorted_node_list:
+    sorted_cont_list[node_name] = selection_algorithm(node_containers_stats[node_name])
+
+  #Sorted container list per node
+  print(sorted_cont_list)
 
 if __name__ == "__main__":
   try:
@@ -58,4 +104,3 @@ if __name__ == "__main__":
         time.sleep(5)
   except KeyboardInterrupt:
     print('stopped!')
-
