@@ -1,10 +1,13 @@
-import json, requests
-import time
+import json
+import requests
+
+from jinja2 import Environment, FileSystemLoader
 
 # Replace with worker node IPs
 NODES = {
-  "node1": "172.31.14.180",
-  "node2": "172.31.0.251"
+  # "node1": "172.31.14.180",
+  # "node2": "172.31.0.251"
+  "node2": "18.237.182.63"
 }
 
 CPU_KEY = 'cpu'
@@ -12,107 +15,102 @@ MEMORY_KEY = 'memory'
 NAME_KEY = 'name'
 PERCENTAGE_KEY = 'percentage'
 
-DATA_RETRIEVAL_INTERVAL_SECONDS = 5
-
-#retrieves data from the collectors
-def retrieve_stats():
-  collected_stats = {}
-
-  for node_name in NODES:
-    ip_address = NODES[node_name]
-    r = requests.get('http://' + ip_address + ':5000')
-    stats = json.loads(r.text)
-
-    collected_stats[node_name] = stats
-
-  return collected_stats
+environment = Environment(loader=FileSystemLoader("templates/"))
+template = environment.get_template("eds.jinja")
 
 
-#returns the list of nodes
-def select_node(collected_stats):
-  node_data_list = []
+class Fetcher:
 
-  for node_name in collected_stats:
-    stats = collected_stats[node_name]
-    node = stats['node'][0]
+  def __init__(self, output):
+    self.output = output
 
-    data = {}
-    data['name'] = node_name
-    data[CPU_KEY] = replace_percentage_sign(node[CPU_KEY])
-    data[MEMORY_KEY] = replace_percentage_sign(node[MEMORY_KEY]['percent'])
+  # retrieves data from the collectors
+  def retrieve_stats(self):
+    collected_stats = {}
 
-    node_data_list.append(data)
+    for node_name in NODES:
+      ip_address = NODES[node_name]
+      r = requests.get('http://' + ip_address + ':5000')
+      stats = json.loads(r.text)
 
-  return selection_algorithm(node_data_list)
+      collected_stats[node_name] = stats
 
+    return collected_stats
 
-#returns the list of containers running in the first choice node 
-def select_container(stats):
-  container_stats = []
+  # returns the list of nodes
+  def select_node(self, collected_stats):
+    node_data_list = []
 
-  for i in range(0, len(stats)):
-    data = {}
-    data['name'] = stats[i]['container']
-    data[CPU_KEY] = replace_percentage_sign(stats[i][CPU_KEY])
-    data[MEMORY_KEY] = replace_percentage_sign(stats[i][MEMORY_KEY]['percent'])
+    for node_name in collected_stats:
+      stats = collected_stats[node_name]
+      node = stats['node'][0]
 
-    container_stats.append(data)
+      data = {}
+      data['name'] = node_name
+      data[CPU_KEY] = self.replace_percentage_sign(node[CPU_KEY])
+      data[MEMORY_KEY] = self.replace_percentage_sign(node[MEMORY_KEY]['percent'])
 
-  return selection_algorithm(container_stats)
+      node_data_list.append(data)
 
-#returns the top choice of stats list (container or node)
-def selection_algorithm(stats):
-  # stats argument structure => [ { name: 'foo', cpu: 10, memory: 20}]
-  cpu_stats = []
-  mem_stats = []
-  diff = {}
+    return self.selection_algorithm(node_data_list)
 
-  for i in range(len(stats)):
-    cpu_val = stats[i][CPU_KEY]
-    cpu_stats.append(float(cpu_val))
-    mem_val = stats[i][MEMORY_KEY]
-    mem_stats.append(float(mem_val))
+  # returns the list of containers running in the first choice node
+  def select_container(self, stats):
+    container_stats = []
 
-  cpu_stats.sort()
-  mem_stats.sort()
+    for i in range(0, len(stats)):
+      data = {}
+      data['name'] = stats[i]['container']
+      data[CPU_KEY] = self.replace_percentage_sign(stats[i][CPU_KEY])
+      data[MEMORY_KEY] = self.replace_percentage_sign(stats[i][MEMORY_KEY]['percent'])
 
-  for i in range(len(stats)):
-    cpu_val = stats[i][CPU_KEY]
-    mem_val = stats[i][MEMORY_KEY]
-    diff[stats[i]['name']] = abs(float(cpu_val) - cpu_stats[0]) + abs(float(mem_val) - mem_stats[0])
+      container_stats.append(data)
 
-  dictionary_keys = list(diff.keys())
-  sorted_diff_dict = {dictionary_keys[i]: sorted(diff.values())[i] for i in range(len(dictionary_keys))}
-  sorted_list = list(sorted_diff_dict.keys())
+    return self.selection_algorithm(container_stats)
 
-  ## @TODO - This should return a list instead of a sorted dictionary.
-  # Returns the top choice or value at index 0
-  return sorted_list[0]
+  # returns the top choice of stats list (container or node)
+  def selection_algorithm(self, stats):
+    # stats argument structure => [ { name: 'foo', cpu: 10, memory: 20}]
+    cpu_stats = []
+    mem_stats = []
+    diff = {}
 
+    for i in range(len(stats)):
+      cpu_val = stats[i][CPU_KEY]
+      cpu_stats.append(float(cpu_val))
+      mem_val = stats[i][MEMORY_KEY]
+      mem_stats.append(float(mem_val))
 
-#writes first choice node and container name to results file
-def write_results(node_name, container_name):
-  f = open("result.txt", "w")
-  f.write("node: " + node_name)
-  f.write("\ncontainer: " + container_name)
-  f.close()
+    cpu_stats.sort()
+    mem_stats.sort()
 
+    for i in range(len(stats)):
+      cpu_val = stats[i][CPU_KEY]
+      mem_val = stats[i][MEMORY_KEY]
+      diff[stats[i]['name']] = abs(float(cpu_val) - cpu_stats[0]) + abs(float(mem_val) - mem_stats[0])
 
-def replace_percentage_sign(value):
-  return value.replace('%', '')
+    dictionary_keys = list(diff.keys())
+    sorted_diff_dict = {dictionary_keys[i]: sorted(diff.values())[i] for i in range(len(dictionary_keys))}
+    sorted_list = list(sorted_diff_dict.keys())
 
+    ## @TODO - This should return a list instead of a sorted dictionary.
+    # Returns the top choice or value at index 0
+    return sorted_list[0]
 
-def main():
-  collected_stats = retrieve_stats();
-  selected_node = select_node(collected_stats)
-  selected_container = select_container(collected_stats[selected_node]['containers'])
-  write_results(selected_node, selected_container)
+  # writes first choice node and container name to results file
+  def write_results(self, template):
+    f = open(self.output, "w")
+    f.write(template)
+    f.close()
 
+  def replace_percentage_sign(self, value):
+    return value.replace('%', '')
 
-if __name__ == "__main__":
-  try:
-    while True:
-      main()
-      time.sleep(DATA_RETRIEVAL_INTERVAL_SECONDS)
-  except KeyboardInterrupt:
-    print('stopped!')
+  def process(self):
+    collected_stats = self.retrieve_stats();
+    selected_node = self.select_node(collected_stats)
+    selected_container = self.select_container(collected_stats[selected_node]['containers'])
+
+    rendered_template = template.render(address=selected_node, port=selected_container)
+
+    self.write_results(rendered_template)
