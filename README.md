@@ -25,3 +25,9 @@ $ export FLASk_ENV=development
 ```bash
 $ flask run --host=0.0.0.0
 ```
+
+
+## Fetcher Setup
+```bash
+python3 fetcher-main.py --output "/tmp/foo.txt"
+```
