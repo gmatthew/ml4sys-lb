@@ -1,5 +1,6 @@
 import numpy as np
 import park
+import os
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Flatten
 from tensorflow.keras.optimizers import Adam
@@ -41,6 +42,8 @@ def train(env, states, actions):
     dqn = build_agent(model, actions)
     dqn.compile(Adam(lr=1e-3), metrics=['mae'])
     dqn.fit(env, nb_steps=total_training_steps, visualize=False, verbose=1)
+    # Save the trained model    
+    dqn.save_weights('dqn_lb.h5f', overwrite=True)
 
 
 def main():
