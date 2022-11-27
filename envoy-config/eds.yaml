@@ -8,5 +8,5 @@ resources:
     - endpoint:
         address:
           socket_address:
-            address: 172.130.0.251
-            port_value: 8000
+            address: 172.31.0.251
+            port_value: 8080

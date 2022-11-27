@@ -1,11 +1,11 @@
 node:
   id: id_1
-  cluster: test
+  cluster: service1
 dynamic_resources:
-  # lds_config:
-    #    path: "/home/ubuntu/ml4sys-lb/envoy-config/lds.conf"
+  lds_config:
+    path: "/home/ubuntu/ml4sys-lb/envoy-config/lds.yaml"
   cds_config:
-    path: "/home/ubuntu/ml4sys-lb/envoy-config/cds.conf"
+    path: "/home/ubuntu/ml4sys-lb/envoy-config/cds.yaml"
 admin:
   access_log_path: "/dev/null"
   address:
