@@ -117,10 +117,11 @@ meminfo_t parse_meminfo()
 
 void print_mem_stats(const meminfo_t m)
 {
+    double mem_use_percent = 100 - m.MemAvailablePercent;
     printf("{\"memory\": {\"raw\": \"%lldMiB / %lld MiB\", \"percent\": \"%f%%\"}",
         m.MemAvailableMiB,
         m.MemTotalMiB,
-        m.MemAvailablePercent);
+        mem_use_percent);
 }
 
 int main (void)
