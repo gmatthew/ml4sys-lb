@@ -111,6 +111,7 @@ class Fetcher:
   # writes first choice node and container name to results file
   def write_results(self, template):
     tmp_output = "/tmp/fetcher-temp.yaml"
+
     f = open(tmp_output, "w")
     f.write(template)
     f.close()

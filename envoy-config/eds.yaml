@@ -6,7 +6,7 @@ resources:
   endpoints:
   - lb_endpoints:
     - endpoint:
-      address:
-        socket_address:
-          address: 172.31.0.251
-          port_value: 8080
+        address:
+          socket_address:
+            address: 172.31.0.251
+            port_value: 8080
