@@ -63,9 +63,11 @@ class Fetcher:
 
       node_data_list.append(data)
 
+    self.logger.debug(node_data_list)
+
     return self.selection_algorithm(node_data_list)
 
-  # returns the list of containers running in the first choice node
+# returns the list of containers running in the first choice node
   def select_container(self, stats):
     container_stats = []
 
@@ -100,13 +102,23 @@ class Fetcher:
       mem_val = stats[i][MEMORY_KEY]
       diff[stats[i]['name']] = abs(float(cpu_val) - cpu_stats[0]) + abs(float(mem_val) - mem_stats[0])
 
-    dictionary_keys = list(diff.keys())
-    sorted_diff_dict = {dictionary_keys[i]: sorted(diff.values())[i] for i in range(len(dictionary_keys))}
-    sorted_list = list(sorted_diff_dict.keys())
+    self.logger.debug("Diff Dictionary: %s", diff)
+
+    min = 10000
+    min_key = 0
+    for k in diff.keys():
+        value = diff[k]
+        if (value < min):
+            min = value
+            min_key = k
 
     ## @TODO - This should return a list instead of a sorted dictionary.
     # Returns the top choice or value at index 0
-    return sorted_list[0]
+
+    self.logger.debug("Min Key: %s", min_key)
+
+    return min_key
+    #return sorted_list[0]
 
   # writes first choice node and container name to results file
   def write_results(self, template):
@@ -127,7 +139,7 @@ class Fetcher:
     selected_container = self.select_container(collected_stats[selected_node]['containers'])
 
     container = CONTAINER_ID_TO_ADDRESS_PORT[selected_container]
-    self.logger.debug(container)
+    self.logger.debug("Selected Node: %s, Selected Container: %s, Container Info: %s", selected_node, selected_container, container)
 
     rendered_template = template.render(address=container['address'], port=container['port'])
 
