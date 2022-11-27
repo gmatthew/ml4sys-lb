@@ -6,7 +6,7 @@ from jinja2 import Environment, FileSystemLoader
 
 # Replace with worker node IPs
 NODES = {
-  # "node1": "172.31.14.180",
+   "node1": "172.31.14.180",
   # "node2": "172.31.0.251"
   "node2": "18.237.182.63"
 }
@@ -15,9 +15,9 @@ CONTAINER_ID_TO_ADDRESS_PORT = {
   "08d73b9bf25e": {"address": NODES['node2'], "port": 8080},
   "c7edf3064f7c": {"address": NODES['node2'], "port": 8081},
   "10f842fa97c8": {"address": NODES['node2'], "port": 8082},
-  #"n2c1": {"address": NODES['node1'], "port": 8080},
-  #"n2c2": {"address": NODES['node1'], "port": 8081},
-  #"n2c3": {"address": NODES['node1'], "port": 8082},
+  "ab85fda7e122": {"address": NODES['node1'], "port": 8080},
+  "63efe4210fce": {"address": NODES['node1'], "port": 8081},
+  "14cc6d34420a": {"address": NODES['node1'], "port": 8082},
 }
 
 CPU_KEY = 'cpu'
