@@ -3,8 +3,8 @@ import time
 
 # Replace with worker node IPs
 NODES = {
-  "node1": "10.0.60.93",
-  "node2": "10.0.60.194"
+  "node1": "172.31.14.180",
+  "node2": "172.31.0.251"
 }
 
 CPU_KEY = 'cpu'
