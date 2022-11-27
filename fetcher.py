@@ -1,3 +1,4 @@
+import os
 import json
 import requests
 
@@ -11,12 +12,12 @@ NODES = {
 }
 
 CONTAINER_ID_TO_ADDRESS_PORT = {
-  "08d73b9bf25e": {"address": NODES['node1'], "port": 8080},
-  "c7edf3064f7c": {"address": NODES['node1'], "port": 8081},
-  "10f842fa97c8": {"address": NODES['node1'], "port": 8082},
-  "n2c1": {"address": NODES['node2'], "port": 8080},
-  "n2c2": {"address": NODES['node2'], "port": 8081},
-  "n2c3": {"address": NODES['node2'], "port": 8082},
+  "08d73b9bf25e": {"address": NODES['node2'], "port": 8080},
+  "c7edf3064f7c": {"address": NODES['node2'], "port": 8081},
+  "10f842fa97c8": {"address": NODES['node2'], "port": 8082},
+  #"n2c1": {"address": NODES['node1'], "port": 8080},
+  #"n2c2": {"address": NODES['node1'], "port": 8081},
+  #"n2c3": {"address": NODES['node1'], "port": 8082},
 }
 
 CPU_KEY = 'cpu'
@@ -30,8 +31,9 @@ template = environment.get_template("eds.jinja")
 
 class Fetcher:
 
-  def __init__(self, output):
+  def __init__(self, output, logger):
     self.output = output
+    self.logger = logger
 
   # retrieves data from the collectors
   def retrieve_stats(self):
@@ -108,9 +110,12 @@ class Fetcher:
 
   # writes first choice node and container name to results file
   def write_results(self, template):
-    f = open(self.output, "w")
+    tmp_output = "/tmp/fetcher-temp.yaml"
+    f = open(tmp_output, "w")
     f.write(template)
     f.close()
+
+    os.system('mv -f ' + tmp_output + " " + self.output)
 
   def replace_percentage_sign(self, value):
     return value.replace('%', '')
@@ -121,6 +126,7 @@ class Fetcher:
     selected_container = self.select_container(collected_stats[selected_node]['containers'])
 
     container = CONTAINER_ID_TO_ADDRESS_PORT[selected_container]
+    self.logger.debug(container)
 
     rendered_template = template.render(address=container['address'], port=container['port'])
 

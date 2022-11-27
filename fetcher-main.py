@@ -19,7 +19,7 @@ logger.setLevel(logging.DEBUG)
 
 
 def main(output):
-  fetcher = Fetcher(output)
+  fetcher = Fetcher(output, logger)
 
   while True:
     logger.info("Processing...")
