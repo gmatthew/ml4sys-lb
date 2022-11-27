@@ -9,4 +9,4 @@ resources:
   eds_cluster_config:
     service_name: localservices
     eds_config:
-      path: "/home/ubuntu/ml4sys-lb/envoy-config/eds.conf"
+      path: "/home/ubuntu/ml4sys-lb/envoy-config/eds.yaml"

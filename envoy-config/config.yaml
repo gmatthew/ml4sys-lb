@@ -1,6 +1,9 @@
+node:
+  id: id_1
+  cluster: test
 dynamic_resources:
-  lds_config:
-    path: "/home/ubuntu/ml4sys-lb/envoy-config/lds.conf"
+  # lds_config:
+    #    path: "/home/ubuntu/ml4sys-lb/envoy-config/lds.conf"
   cds_config:
     path: "/home/ubuntu/ml4sys-lb/envoy-config/cds.conf"
 admin:
