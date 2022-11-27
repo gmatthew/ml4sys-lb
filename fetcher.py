@@ -10,6 +10,15 @@ NODES = {
   "node2": "18.237.182.63"
 }
 
+CONTAINER_ID_TO_ADDRESS_PORT = {
+  "08d73b9bf25e": {"address": NODES['node1'], "port": 8080},
+  "c7edf3064f7c": {"address": NODES['node1'], "port": 8081},
+  "10f842fa97c8": {"address": NODES['node1'], "port": 8082},
+  "n2c1": {"address": NODES['node2'], "port": 8080},
+  "n2c2": {"address": NODES['node2'], "port": 8081},
+  "n2c3": {"address": NODES['node2'], "port": 8082},
+}
+
 CPU_KEY = 'cpu'
 MEMORY_KEY = 'memory'
 NAME_KEY = 'name'
@@ -111,6 +120,8 @@ class Fetcher:
     selected_node = self.select_node(collected_stats)
     selected_container = self.select_container(collected_stats[selected_node]['containers'])
 
-    rendered_template = template.render(address=selected_node, port=selected_container)
+    container = CONTAINER_ID_TO_ADDRESS_PORT[selected_container]
+
+    rendered_template = template.render(address=container['address'], port=container['port'])
 
     self.write_results(rendered_template)
