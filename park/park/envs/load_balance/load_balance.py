@@ -227,3 +227,18 @@ class LoadBalanceEnv(core.Env):
                self.incoming_job is None)
 
         return self.observe(), reward, done, {'curr_time': self.wall_time.curr_time}
+
+
+    def run(self, agent):
+        print("Run with agent")
+        # Start
+        self.reset()
+        # Run
+        # TODO: may need to change logic; not sure it is correct or not
+        done = False
+        score = 0 
+        while not done:
+            act = agent.get_action()
+            obs, reward, done, info = self.step(act)
+            score += reward
+        print(score)
