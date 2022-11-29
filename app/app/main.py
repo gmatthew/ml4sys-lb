@@ -1,6 +1,7 @@
 import os
 import json
 import time
+import numpy as np
 
 from flask import Flask, jsonify
 
@@ -54,10 +55,9 @@ def multiply_matrix(A,B):
 def do_cpu_intensive_work():
   # do some metrics calculation over how many iterations
   np.random.seed(27)
-  A = np.random.randint(1,35000,size = (500, 500))
-  B = np.random.randint(1,56000,size = (500, 500))
+  A = np.random.randint(1,35000,size = (250, 250))
+  B = np.random.randint(1,56000,size = (250, 250))
   C = multiply_matrix(A,B)
-  C.sort()
 
   #return(C[0][0])
   return "Worker App | CPU"
@@ -68,12 +68,11 @@ def do_memory_intensive_work():
   # do some memory allocation stuff that takes up space
   d = {}
   i = 0
-  for j in range(0,100):
+  for j in range(0,10):
     for i in range(0, 10000000):
       d[i] = 'A'*1024
       if i % 10000 == 0:
         c = i
-        time.sleep(0.01)
 
   #return(c)
   return "Worker App | Memory"
