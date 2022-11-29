@@ -1,5 +1,6 @@
 import os
 import json
+import time
 
 from flask import Flask, jsonify
 
@@ -39,18 +40,42 @@ def hello():
 
   return "Worker App | Root"
 
+def multiply_matrix(A,B):
+  global C
+  C = np.zeros((A.shape[0],B.shape[1]),dtype = int)
+  if  A.shape[1] == B.shape[0]:
+      for i in range(len(A)):
+          for j in range(len(B[0])):
+              for k in range(len(B)):
+                  C[i][j] += A[i][k] * B[k][j]
+  return C
 
 @app.route('/cpu')
 def do_cpu_intensive_work():
   # do some metrics calculation over how many iterations
-  # copy adfasd
+  np.random.seed(27)
+  A = np.random.randint(1,35000,size = (500, 500))
+  B = np.random.randint(1,56000,size = (500, 500))
+  C = multiply_matrix(A,B)
+  C.sort()
+
+  #return(C[0][0])
   return "Worker App | CPU"
 
 
 @app.route('/memory')
 def do_memory_intensive_work():
   # do some memory allocation stuff that takes up space
+  d = {}
+  i = 0
+  for j in range(0,100):
+    for i in range(0, 10000000):
+      d[i] = 'A'*1024
+      if i % 10000 == 0:
+        c = i
+        time.sleep(0.01)
 
+  #return(c)
   return "Worker App | Memory"
 
 ## JMeter (http://foo.com/?type=cpu|memory ----> envoy ----> workers
