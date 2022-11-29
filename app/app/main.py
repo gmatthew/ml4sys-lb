@@ -5,16 +5,14 @@ from flask import Flask, jsonify
 
 app = Flask(__name__)
 
-@app.route("/")
-def main():
 
+@app.route("/")
+def hello():
   # orchestration
   # based on query param work type
   # e.g localhost/?worktype=cpu  or localhost/?worktype=mem
 
   # switch(workertype)
-
-
 
   # A
   # this main application running on the worker nodes
@@ -24,7 +22,6 @@ def main():
   # 2 - memory intensive
   # using query parameter, we will invoke different mix of workloads (cpu and memory)
 
-
   # B
   # Dockerize this application
   # 1. create Dockerfile
@@ -32,41 +29,31 @@ def main():
   # 3. publish to docker hub
   # 4. deploy to worker nodes
 
-
   # C - experiment setup
   # 1. restrict the docker containers to be using the lowest memory and cpu allowed (.5 vCPU .5 Mem)
   # ->>>> ?memtype=mem   ?memtype=cpu
   # 2 . loginto application and run memtester in the container
 
-
   # Experiments
   #
 
-  switch(type):
-    "cpu":
-      do_cpu_intensive_work();
-      break;
-
-    "memory":
-      do_memory_intensive_work()
-
-  return "Worker App"
-
-def do_normal_work():
-
-  return
+  return "Worker App | Root"
 
 
+@app.route('/cpu')
 def do_cpu_intensive_work():
   # do some metrics calculation over how many iterations
   # copy adfasd
-  return
+  return "Worker App | CPU"
 
 
+@app.route('/memory')
 def do_memory_intensive_work():
   # do some memory allocation stuff that takes up space
 
-  return
-
+  return "Worker App | Memory"
 
 ## JMeter (http://foo.com/?type=cpu|memory ----> envoy ----> workers
+# if __name__ == "__main__":
+#   # Only for debugging while developing
+#   app.run(host='0.0.0.0', debug=True, port=80)
