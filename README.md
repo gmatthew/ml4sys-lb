@@ -17,8 +17,8 @@ sudo firewall-cmd --reload
 
 ## Set Environment Variables
 ```bash
-$ export FLASK_APP=app.py
-$ export FLASk_ENV=development
+export FLASK_APP=app.py
+export FLASk_ENV=development
 ```
 
 ## Start Server
