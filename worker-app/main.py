@@ -42,7 +42,15 @@ def main():
   # Experiments
   #
 
-  return jsonify(results)
+  switch(type):
+    "cpu":
+      do_cpu_intensive_work();
+      break;
+
+    "memory":
+      do_memory_intensive_work()
+
+  return "Worker App"
 
 def do_normal_work():
 
@@ -51,7 +59,7 @@ def do_normal_work():
 
 def do_cpu_intensive_work():
   # do some metrics calculation over how many iterations
-
+  # copy adfasd
   return
 
 
@@ -59,3 +67,6 @@ def do_memory_intensive_work():
   # do some memory allocation stuff that takes up space
 
   return
+
+
+## JMeter (http://foo.com/?type=cpu|memory ----> envoy ----> workers
