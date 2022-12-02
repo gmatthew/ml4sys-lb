@@ -7,8 +7,8 @@ from jinja2 import Environment, FileSystemLoader
 # Replace with worker node IPs
 NODES = {
    "node1": "172.31.14.180",
-  # "node2": "172.31.0.251"
-  "node2": "18.237.182.63"
+   "node2": "172.31.0.251"
+   # "node2": "18.237.182.63"
 }
 
 CONTAINER_ID_TO_ADDRESS_PORT = {
@@ -63,7 +63,7 @@ class Fetcher:
 
       node_data_list.append(data)
 
-    self.logger.debug(node_data_list)
+    self.logger.debug('Node Stats: {}'.format(node_data_list))
 
     return self.selection_algorithm(node_data_list)
 
@@ -71,6 +71,7 @@ class Fetcher:
   def select_container(self, stats):
     container_stats = []
 
+    
     for i in range(0, len(stats)):
       data = {}
       data['name'] = stats[i]['container']
@@ -78,6 +79,8 @@ class Fetcher:
       data[MEMORY_KEY] = self.replace_percentage_sign(stats[i][MEMORY_KEY]['percent'])
 
       container_stats.append(data)
+
+    self.logger.debug('Container Stats: {}'.format(container_stats))
 
     return self.selection_algorithm(container_stats)
 

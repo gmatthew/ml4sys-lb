@@ -25,8 +25,8 @@ def main(output):
     logger.info("Processing...")
     fetcher.process()
 
-    logger.info("Sleeping...")
-    time.sleep(DATA_RETRIEVAL_INTERVAL_SECONDS)
+#    logger.info("Sleeping...")
+    #time.sleep(DATA_RETRIEVAL_INTERVAL_SECONDS)
 
 
 if __name__ == "__main__":

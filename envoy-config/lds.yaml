@@ -28,6 +28,7 @@ resources:
             - match:
                 prefix: "/"
               route:
+                timeout: 0s
                 cluster: service1
         http_filters:
         - name: envoy.filters.http.router
