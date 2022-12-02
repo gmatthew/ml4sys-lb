@@ -2,11 +2,12 @@ import os
 import json
 import time
 import numpy as np
-
 from flask import Flask, jsonify
 
 app = Flask(__name__)
+np.random.seed(27)
 
+APPNAME = os.getenv('APPNAME')
 
 @app.route("/")
 def hello():
@@ -54,13 +55,13 @@ def multiply_matrix(A,B):
 @app.route('/cpu')
 def do_cpu_intensive_work():
   # do some metrics calculation over how many iterations
-  np.random.seed(27)
-  A = np.random.randint(1,35000,size = (250, 250))
-  B = np.random.randint(1,56000,size = (250, 250))
+  A = np.random.randint(1,350,size = (100, 100))
+  B = np.random.randint(1,560,size = (100, 100))
   C = multiply_matrix(A,B)
 
-  #return(C[0][0])
-  return "Worker App | CPU"
+  sleep_time = do_random_sleep()
+
+  return "CPU | Name: {} | Sleep Time: {}ms".format(APPNAME, sleep_time)
 
 
 @app.route('/memory')
@@ -69,13 +70,22 @@ def do_memory_intensive_work():
   d = {}
   i = 0
   for j in range(0,10):
-    for i in range(0, 10000000):
+    for i in range(0, 1000):
       d[i] = 'A'*1024
       if i % 10000 == 0:
         c = i
 
-  #return(c)
-  return "Worker App | Memory"
+  sleep_time = do_random_sleep()
+
+  return "Memory | Name: {} | Sleep Time: {}ms".format(APPNAME, sleep_time)
+
+
+def do_random_sleep():
+  sleep_time = np.random.random() * 1
+
+  time.sleep(sleep_time)
+
+  return round(sleep_time * 1000)
 
 ## JMeter (http://foo.com/?type=cpu|memory ----> envoy ----> workers
 # if __name__ == "__main__":
