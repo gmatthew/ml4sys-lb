@@ -17,7 +17,7 @@ def main():
   return jsonify(results)
 
 def get_container_stats():
-  cmd = "docker stats --no-stream --format '{\"container\": \"{{ .Container }}\", \"memory\": { \"raw\": \"{{ .MemUsage }}\", \"percent\": \"{{ .MemPerc }}\"}, \"cpu\": \"{{ .CPUPerc }}\"}'"
+  cmd = "docker stats --no-stream --format '{\"container\": \"{{ .Name }}\", \"memory\": { \"raw\": \"{{ .MemUsage }}\", \"percent\": \"{{ .MemPerc }}\"}, \"cpu\": \"{{ .CPUPerc }}\"}'"
   stream = os.popen(cmd)
   output = stream.read()
   jsonlines = output.split('\n')
