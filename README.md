@@ -29,5 +29,25 @@ $ flask run --host=0.0.0.0
 
 ## Fetcher Setup
 ```bash
-python3 fetcher-main.py --output "/tmp/foo.txt"
+python3 fetcher-main.py --output envoy-config/eds.yaml
+```
+
+
+## Containers 
+
+### Build & Push
+
+```bash
+docker build -t gmatthew/hpn-worker-app .
+docker push gmatthew/hpn-worker-app:latest
+```
+### Launch Containers
+This will launch container on worker nodes
+```bash
+docker container rm container1
+docker container rm container2
+docker container rm container3
+docker run -d --env APPNAME=container21 --name container21 --cpus=".5" --memory="512m" -p 8080:80 gmatthew/hpn-worker-app:latest
+docker run -d --env APPNAME=container22 --name container22 --cpus=".5" --memory="512m" -p 8081:80 gmatthew/hpn-worker-app:latest
+docker run -d --env APPNAME=container23 --name container23 --cpus=".5" --memory="512m" -p 8082:80 gmatthew/hpn-worker-app:latest
 ```
