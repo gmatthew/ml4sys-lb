@@ -5,8 +5,10 @@ resources:
   cluster_name: localservices
   endpoints:
   - lb_endpoints:
+  {%- for endpoint in endpoints %}
     - endpoint:
         address:
           socket_address:
-            address: {{ address }}
-            port_value: {{ port }}
+            address: {{ endpoint.address }}
+            port_value: {{ endpoint.port }}
+  {%- endfor %}
