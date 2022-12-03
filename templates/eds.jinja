@@ -11,4 +11,5 @@ resources:
           socket_address:
             address: {{ endpoint.address }}
             port_value: {{ endpoint.port }}
+      load_balancing_weight: {{ endpoint.weight }}
   {%- endfor %}
