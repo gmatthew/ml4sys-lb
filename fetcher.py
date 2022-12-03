@@ -6,8 +6,8 @@ from jinja2 import Environment, FileSystemLoader
 
 # Replace with worker node IPs
 NODES = {
-   "node1": "172.31.14.180",
-   "node2": "172.31.0.251"
+   "node1": "18.237.182.63",
+   "node2": "34.219.86.165"
    # "node2": "18.237.182.63"
 }
 
@@ -64,11 +64,11 @@ class Fetcher:
       node_data_list.append(data)
 
     self.logger.debug('Node Stats: {}'.format(node_data_list))
-
-    return self.selection_algorithm(node_data_list)
+    sorted_node_list = self.selection_algorithm(node_data_list)
+    return sorted_node_list[0][0]
 
 # returns the list of containers running in the first choice node
-  def select_container(self, stats):
+  def select_containers(self, stats):
     container_stats = []
 
     
@@ -81,8 +81,11 @@ class Fetcher:
       container_stats.append(data)
 
     self.logger.debug('Container Stats: {}'.format(container_stats))
-
-    return self.selection_algorithm(container_stats)
+    sorted_container_list = self.selection_algorithm(container_stats)
+    sorted_cont_name_list = []
+    for cont in sorted_container_list:
+      sorted_cont_name_list.append(cont[0])
+    return sorted_cont_name_list
 
   # returns the top choice of stats list (container or node)
   def selection_algorithm(self, stats):
@@ -106,7 +109,11 @@ class Fetcher:
       diff[stats[i]['name']] = abs(float(cpu_val) - cpu_stats[0]) + abs(float(mem_val) - mem_stats[0])
 
     self.logger.debug("Diff Dictionary: %s", diff)
+    sorted_diff = sorted(diff.items(), key = lambda kv: kv[1])
+    self.logger.debug("Sorted Diff Dictionary: %s", sorted_diff)
 
+    return sorted_diff
+    '''
     min = 10000
     min_key = 0
     for k in diff.keys():
@@ -122,7 +129,7 @@ class Fetcher:
 
     return min_key
     #return sorted_list[0]
-
+    '''
   # writes first choice node and container name to results file
   def write_results(self, template):
     tmp_output = "/tmp/fetcher-temp.yaml"
@@ -139,11 +146,16 @@ class Fetcher:
   def process(self):
     collected_stats = self.retrieve_stats();
     selected_node = self.select_node(collected_stats)
-    selected_container = self.select_container(collected_stats[selected_node]['containers'])
+    selected_containers = self.select_containers(collected_stats[selected_node]['containers'])
 
-    container = CONTAINER_ID_TO_ADDRESS_PORT[selected_container]
-    self.logger.debug("Selected Node: %s, Selected Container: %s, Container Info: %s", selected_node, selected_container, container)
-
-    rendered_template = template.render(address=container['address'], port=container['port'])
-
+    endpoints = []
+    weight = len(selected_containers)
+    for cont in selected_containers:
+      container = CONTAINER_ID_TO_ADDRESS_PORT[cont]
+      self.logger.debug("Selected Node: %s, Selected Container: %s, Container Info: %s", selected_node, cont, container)
+      endpoints.append({'address': container['address'], 'port': container['port'], 'weight': weight})
+      weight = weight - 1
+      #rendered_template = template.render(address=container['address'], port=container['port'])
+    self.logger.debug("Weighted container list %s", endpoints)
+    rendered_template = template.render(endpoints=endpoints)
     self.write_results(rendered_template)
