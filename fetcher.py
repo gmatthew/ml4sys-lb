@@ -12,12 +12,12 @@ NODES = {
 }
 
 CONTAINER_ID_TO_ADDRESS_PORT = {
-  "container21": {"address": NODES['node2'], "port": 8080},
-  "container22": {"address": NODES['node2'], "port": 8081},
-  "container23": {"address": NODES['node2'], "port": 8082},
-  "container11": {"address": NODES['node1'], "port": 8080},
-  "container12": {"address": NODES['node1'], "port": 8081},
-  "container13": {"address": NODES['node1'], "port": 8082},
+  "container21": {"address": NODES['node2'], "port": 8080, "limit": 50},
+  "container22": {"address": NODES['node2'], "port": 8081, "limit": 100},
+  "container23": {"address": NODES['node2'], "port": 8082, "limit": 150},
+  "container11": {"address": NODES['node1'], "port": 8080, "limit": 50},
+  "container12": {"address": NODES['node1'], "port": 8081, "limit": 100},
+  "container13": {"address": NODES['node1'], "port": 8082, "limit": 150},
 }
 
 CPU_KEY = 'cpu'
@@ -74,8 +74,9 @@ class Fetcher:
     
     for i in range(0, len(stats)):
       data = {}
-      data['name'] = stats[i]['container']
-      data[CPU_KEY] = self.replace_percentage_sign(stats[i][CPU_KEY])
+      name = stats[i]['container']
+      data['name'] = name
+      data[CPU_KEY] = float(self.replace_percentage_sign(stats[i][CPU_KEY])) / CONTAINER_ID_TO_ADDRESS_PORT[name]["limit"]
       data[MEMORY_KEY] = self.replace_percentage_sign(stats[i][MEMORY_KEY]['percent'])
 
       container_stats.append(data)
