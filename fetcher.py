@@ -12,12 +12,12 @@ NODES = {
 }
 
 CONTAINER_ID_TO_ADDRESS_PORT = {
-  "container21": {"address": NODES['node2'], "port": 8080, "limit": 50},
-  "container22": {"address": NODES['node2'], "port": 8081, "limit": 100},
-  "container23": {"address": NODES['node2'], "port": 8082, "limit": 150},
-  "container11": {"address": NODES['node1'], "port": 8080, "limit": 50},
-  "container12": {"address": NODES['node1'], "port": 8081, "limit": 100},
-  "container13": {"address": NODES['node1'], "port": 8082, "limit": 150},
+  "container21": {"address": NODES['node2'], "port": 8080, "limit": 400},
+  "container22": {"address": NODES['node2'], "port": 8081, "limit": 400},
+  "container23": {"address": NODES['node2'], "port": 8082, "limit": 400},
+  "container11": {"address": NODES['node1'], "port": 8080, "limit": 400},
+  "container12": {"address": NODES['node1'], "port": 8081, "limit": 400},
+  "container13": {"address": NODES['node1'], "port": 8082, "limit": 400},
 }
 
 CPU_KEY = 'cpu'
