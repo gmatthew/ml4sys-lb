@@ -154,6 +154,7 @@ class Fetcher:
     for nodeid in NODES.keys():
       node_containers = collected_stats[nodeid]['containers']
       selected_containers = self.select_containers(node_containers)
+      selected_containers.pop()
       endpoints = endpoints + self.weighted_endpoints(selected_containers)
 
     self.logger.debug("Weighted container list %s", endpoints)
