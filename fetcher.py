@@ -146,17 +146,32 @@ class Fetcher:
 
   def process(self):
     collected_stats = self.retrieve_stats();
-    selected_node = self.select_node(collected_stats)
-    selected_containers = self.select_containers(collected_stats[selected_node]['containers'])
+
+    '''
+    {'node1': {'containers': [{'container': 'container23', 'cpu': '0.02%', 'memory': {'percent': '13.30%', 'raw': '68.08MiB / 512MiB'}}, {'container': 'container22', 'cpu': '0.02%', 'memory': {'percent': '13.24%', 'raw': '67.81MiB / 512MiB'}}, {'container': 'container21', 'cpu': '0.02%', 'memory': {'percent': '12.80%', 'raw': '65.54MiB / 512MiB'}}], 'node': [{'cpu': '0.601253%', 'memory': {'percent': '5.808398%', 'raw': '15069MiB / 15998 MiB'}}]}, 'node2': {'containers': [{'container': 'container13', 'cpu': '0.02%', 'memory': {'percent': '48.07%', 'raw': '246.1MiB / 512MiB'}}, {'container': 'container12', 'cpu': '0.02%', 'memory': {'percent': '45.19%', 'raw': '231.4MiB / 512MiB'}}, {'container': 'container11', 'cpu': '0.02%', 'memory': {'percent': '47.01%', 'raw': '240.7MiB / 512MiB'}}], 'node': [{'cpu': '0.350627%', 'memory': {'percent': '8.874609%', 'raw': '14579MiB / 15998 MiB'}}]}}
+    '''
+    all_containers = []
+    for nodeid in NODES.keys():
+      all_containers = all_containers + collected_stats[nodeid]['containers']
+
+    self.logger.debug("All Containers: %s", all_containers)
+
+    '''
+    [{'container': 'container23', 'cpu': '0.02%', 'memory': {'percent': '13.30%', 'raw': '68.08MiB / 512MiB'}}, {'container': 'container22', 'cpu': '0.02%', 'memory': {'percent': '13.24%', 'raw': '67.81MiB / 512MiB'}}, {'container': 'container21', 'cpu': '0.02%', 'memory': {'percent': '12.80%', 'raw': '65.54MiB / 512MiB'}}, {'container': 'container13', 'cpu': '0.02%', 'memory': {'percent': '48.07%', 'raw': '246.1MiB / 512MiB'}}, {'container': 'container12', 'cpu': '0.02%', 'memory': {'percent': '45.19%', 'raw': '231.4MiB / 512MiB'}}, {'container': 'container11', 'cpu': '0.02%', 'memory': {'percent': '47.01%', 'raw': '240.7MiB / 512MiB'}}]
+    '''
+
+    selected_containers = self.select_containers(all_containers)
+    self.logger.debug("Selected Containers: %s", selected_containers)
 
     endpoints = []
     weight = len(selected_containers)
     for cont in selected_containers:
       container = CONTAINER_ID_TO_ADDRESS_PORT[cont]
-      self.logger.debug("Selected Node: %s, Selected Container: %s, Container Info: %s", selected_node, cont, container)
+      self.logger.debug("Container Info: %s", container)
       endpoints.append({'address': container['address'], 'port': container['port'], 'weight': weight})
       weight = weight - 1
-      #rendered_template = template.render(address=container['address'], port=container['port'])
+
     self.logger.debug("Weighted container list %s", endpoints)
     rendered_template = template.render(endpoints=endpoints)
+
     self.write_results(rendered_template)
