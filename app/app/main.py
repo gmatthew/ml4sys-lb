@@ -2,6 +2,7 @@ import os
 import json
 import time
 import numpy as np
+
 from flask import Flask, jsonify
 
 app = Flask(__name__)
@@ -74,6 +75,7 @@ def do_memory_intensive_work():
       d[i] = 'A'*1024
       if i % 10000 == 0:
         c = i
+        #time.sleep(0.01)
 
   sleep_time = do_random_sleep()
 
