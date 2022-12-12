@@ -34,7 +34,7 @@ def collect_values(agent_id, param_queue, job_queue, value_queue):
     actor_agent.set_params(actor_params)
 
     # collect experiences
-    for ep in xrange(args.num_ep):
+    for ep in range(args.num_ep):
 
         # get streaming job sequence
         stream_jobs, service_rates = job_queue.get()
@@ -94,18 +94,18 @@ def main():
     create_folder_if_not_exists(args.model_folder)
 
     # initialize communication queues
-    param_queues = [mp.Queue(1) for _ in xrange(args.num_agents)]
-    job_queues = [mp.Queue(1) for _ in xrange(args.num_agents)]
-    value_queues = [mp.Queue(1) for _ in xrange(args.num_agents)]
+    param_queues = [mp.Queue(1) for _ in range(args.num_agents)]
+    job_queues = [mp.Queue(1) for _ in range(args.num_agents)]
+    value_queues = [mp.Queue(1) for _ in range(args.num_agents)]
 
     # set up training agents
     agents = []
-    for i in xrange(args.num_agents):
+    for i in range(args.num_agents):
         agents.append(mp.Process(target=collect_values, args=(
             i, param_queues[i], job_queues[i], value_queues[i])))
 
     # start training agents
-    for i in xrange(args.num_agents):
+    for i in range(args.num_agents):
         agents[i].start()
 
     # set up central session
@@ -127,7 +127,7 @@ def main():
     # synchronize the model parameters for each agent
     actor_params = actor_agent.get_params()
 
-    for i in xrange(args.num_agents):
+    for i in range(args.num_agents):
         param_queues[i].put(actor_params)
 
     # initialize worker service rates
@@ -137,16 +137,16 @@ def main():
     else:
         service_rates = [np.random.uniform(
             args.service_rate_min, args.service_rate_max) \
-            for _ in xrange(args.num_workers)]
+            for _ in range(args.num_workers)]
 
     # ---- visualize some values ----
-    for ep in xrange(args.num_ep):
+    for ep in range(args.num_ep):
         print 'collection epoch', ep
 
         stream_jobs = generate_jobs(int(args.num_stream_jobs))
 
         # send out parameters to training agents
-        for i in xrange(args.num_agents):
+        for i in range(args.num_agents):
             job_queues[i].put([stream_jobs, service_rates])
 
         # storage for advantage computation
@@ -158,7 +158,7 @@ def main():
         t1 = time.time()
 
         # update average reward
-        for i in xrange(args.num_agents):
+        for i in range(args.num_agents):
 
             batch_reward, batch_wall_time = value_queues[i].get()
 
@@ -178,7 +178,7 @@ def main():
         # compute differential reward
         all_diff_cum_reward = []
         avg_per_step_reward = avg_reward_calculator.get_avg_per_step_reward()
-        for i in xrange(args.num_agents):
+        for i in range(args.num_agents):
             diff_reward = np.array([r - avg_per_step_reward * t for \
                 (r, t) in zip(all_reward[i], all_diff_time[i])])
 
@@ -192,7 +192,7 @@ def main():
         # visualize value trajectories
         fig = plt.figure()
 
-        for i in xrange(args.num_agents):
+        for i in range(args.num_agents):
             plt.plot(all_wall_time[i], all_diff_cum_reward[i], 'b', alpha=0.8)
             plt.plot(all_wall_time[i], baselines[i], 'black', alpha=0.8)
 

@@ -13,8 +13,8 @@ def visualize_queue_occupancy(workers, finished_jobs,
     # overall job occupancy
     overall_time, overall_jobs = [], []
     # job occupacny for each worker
-    worker_time = [[] for _ in xrange(args.num_workers)]
-    worker_jobs = [[] for _ in xrange(args.num_workers)]
+    worker_time = [[] for _ in range(args.num_workers)]
+    worker_jobs = [[] for _ in range(args.num_workers)]
     
     # all job arrival/departure events
     events = []
@@ -66,7 +66,7 @@ def visualize_queue_occupancy(workers, finished_jobs,
 
     # compute average job completion time
     job_completion_time = []
-    worker_job_completion_time = [[] for _ in xrange(args.num_workers)]
+    worker_job_completion_time = [[] for _ in range(args.num_workers)]
 
     for job in finished_jobs:
         duration = job.finish_time - job.arrival_time
@@ -84,7 +84,7 @@ def visualize_queue_occupancy(workers, finished_jobs,
     ax.set_xlabel('Time')
     ax.set_ylabel('Queue size')
 
-    for worker_id in xrange(args.num_workers):
+    for worker_id in range(args.num_workers):
         ax = plt.subplot(args.num_workers + 1, 1, worker_id + 2)
         ax.step(worker_time[worker_id], worker_jobs[worker_id],
                 'blue', alpha=0.85, where='post')

@@ -6,7 +6,7 @@ import environments as envs
 from utils import *
 from param import *
 from load_balance.heuristic_agents import *
-from actor_agent import *
+from load_balance_actor_agent import *
 
 
 def main():
@@ -19,9 +19,9 @@ def main():
 
     # different agents for different environments
     if args.env == 'load_balance':
-        schemes = ['shortest_processing_time', 'learn']
+        schemes = ['shortest_processing_time', 'round_robin', 'learn']
     else:
-        print 'Schemes for ' + args.env + ' does not exist'
+        print('Schemes for ' + args.env + ' does not exist')
         exit(1)
 
     # tensorflow session
@@ -52,13 +52,16 @@ def main():
 
         elif scheme == 'shortest_processing_time':
             agents[scheme] = ShortestProcessingTimeAgent()
+        
+        elif scheme == 'round_robin':
+            agents[scheme] = RoundRobinAgent()
 
         else:
-            print 'invalid scheme', scheme
+            print('invalid scheme', scheme)
             exit(1)
 
     # run testing experiments
-    for ep in xrange(args.num_ep):
+    for ep in range(2000):
 
         for scheme in schemes:
 
@@ -84,7 +87,7 @@ def main():
                 total_reward += reward
 
             t2 = time.time()
-            print 'Elapsed', scheme, t2 - t1, 'seconds'
+            print('Elapsed', scheme, t2 - t1, 'seconds')
 
             all_performance[scheme].append(total_reward)
 

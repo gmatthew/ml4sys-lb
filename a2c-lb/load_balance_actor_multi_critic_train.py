@@ -312,7 +312,7 @@ def main():
 
         t4 = time.time()
         print('worker send back and apply gradients', t4 - t3, 'seconds')
-
+        print('avg_per_step_reward', avg_per_step_reward)
         print('average reward', avg_per_step_reward * -args.reward_scale)
 
         summary_str = sess.run(summary_ops, feed_dict={

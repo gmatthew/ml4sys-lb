@@ -310,7 +310,7 @@ def main():
 
         t5 = time.time()
         print('apply gradient', t5 - t4, 'seconds')
-
+        print('avg_per_step_reward', avg_per_step_reward)
         print('average reward', avg_per_step_reward * -args.reward_scale)
 
         summary_str = sess.run(summary_ops, feed_dict={

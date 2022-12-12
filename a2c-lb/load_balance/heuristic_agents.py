@@ -39,3 +39,16 @@ class ShortestProcessingTimeAgent(object):
                 min_time = remain_time
 
         return min_time_idx
+
+    
+class RoundRobinAgent(object):
+  def __init__(self):
+      self.selected = 0
+      pass
+
+  def get_action(self, state):
+      workers, _, _ = state
+    
+      self.selected = self.selected + 1
+      rr_idx = self.selected % len(workers)
+      return rr_idx

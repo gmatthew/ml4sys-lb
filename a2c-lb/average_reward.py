@@ -34,4 +34,5 @@ class AveragePerStepReward(object):
                 assert list_reward[i] == 0
 
     def get_avg_per_step_reward(self):
+        print(f"reward_sum = {self.reward_sum}, time_sum = {self.time_sum}")
         return float(self.reward_sum) / float(self.time_sum)
