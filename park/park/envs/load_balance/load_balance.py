@@ -160,7 +160,7 @@ class LoadBalanceEnv(core.Env):
         self.action_space = spaces.Discrete(config.num_servers)
 
     def step(self, action):
-
+        print(action)
         # 0 <= action < num_servers
         assert self.action_space.contains(action)
 
@@ -180,7 +180,6 @@ class LoadBalanceEnv(core.Env):
         reward = 0
 
         while len(self.timeline) > 0:
-
             new_time, obj = self.timeline.pop()
 
             # update reward
@@ -225,7 +224,7 @@ class LoadBalanceEnv(core.Env):
 
         done = ((len(self.timeline) == 0) and \
                self.incoming_job is None)
-
+        #print(f"reward: {reward}")
         return self.observe(), reward, done, {'curr_time': self.wall_time.curr_time}
 
 
@@ -237,8 +236,15 @@ class LoadBalanceEnv(core.Env):
         # TODO: may need to change logic; not sure it is correct or not
         done = False
         score = 0 
+        step = 0
         while not done:
             act = agent.get_action()
             obs, reward, done, info = self.step(act)
+            print(f"reward: {reward}")
+            step += 1
             score += reward
-        print(score)
+        print(f"total score: {score}")
+        print(step)
+
+    def render(self, mode='human', close=False):
+        pass
