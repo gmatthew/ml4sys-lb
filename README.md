@@ -3,18 +3,19 @@
 
 ## Installation
 
-To run the app flawlessly, satisfy the requirements
+To run the training and experiments, satisfy the requirements with
 ```bash
 $ pip install -r requirements.txt
 ```
 
-## Set Environment Variables
+## Train Model
 ```bash
-$ export FLASK_APP=app.py
-$ export FLASk_ENV=development
+$ ./train.sh
 ```
 
-## Start Server
+## Run Experiments
 ```bash
-$ flask run
+$ ./run.sh
 ```
+
+If you meet `OSError: [Errno 24] Too many open files`, please use `ulimit -n ${num}` to adjust your environment.
