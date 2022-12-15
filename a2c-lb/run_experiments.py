@@ -7,6 +7,8 @@ from utils import *
 from param import *
 from load_balance.heuristic_agents import *
 from load_balance_actor_agent import *
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 
 
 def main():
@@ -24,7 +26,10 @@ def main():
         print('Schemes for ' + args.env + ' does not exist')
         exit(1)
 
+    # python3 load_balance_actor_multi_critic_train.py --num_workers 10 --service_rates 0.15 0.25 0.35 0.45 0.55 0.65 0.75 0.85 0.95 1.05 --result_folder ./results/10_value_networks/ --model_folder ./results/parameters/10_value_networks/
+
     # tensorflow session
+    tf.disable_v2_behavior()
     sess = tf.compat.v1.Session()
 
     # store results
